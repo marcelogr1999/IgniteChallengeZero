@@ -1,1 +1,39 @@
-// TODO
+.postContainer {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 1rem 2rem 0 2rem;
+
+  .post {
+    h1 {
+      color: var(--white-100);
+      padding-bottom: .5rem;
+    }
+
+    >span {
+      color: var(--white-200);
+    }
+
+    .postFooter {
+      padding-top: 1rem;
+      color: var(--white-300);
+
+      span {
+        svg {
+          margin-right: 0.5rem;
+        }
+        &+span {
+          padding-left: 1rem;
+        }
+      }
+    }
+
+    &+.post {
+      padding-top: 2rem;
+    }
+  }
+
+  .loadPosts {
+    padding-top: 3rem;
+    color: var(--pink);
+  }
+}
