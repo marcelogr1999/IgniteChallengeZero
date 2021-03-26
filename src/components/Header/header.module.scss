@@ -7,8 +7,13 @@
   margin: 0 auto;
 
   img {
-      height: 25px;
+    height: 25px;
+    cursor: pointer;
+
+    transition: filter .2s;
+
+    &:hover {
+      filter: brightness(0.8);
+    }
   }
 }
-
-

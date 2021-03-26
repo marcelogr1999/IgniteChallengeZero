@@ -1,12 +1,26 @@
-.postContainer {
+.postsContainer {
   max-width: 1120px;
   margin: 0 auto;
   padding: 1rem 2rem 0 2rem;
 
   .post {
+    cursor: pointer;
+
     h1 {
       color: var(--white-100);
       padding-bottom: .5rem;
+      transition: color .2s;
+    }
+
+    &:hover {
+      h1 {
+        color: var(--pink);
+      }
+
+      span,
+      time {
+        filter: brightness(0.8);
+      }
     }
 
     >span {
@@ -21,7 +35,8 @@
         svg {
           margin-right: 0.5rem;
         }
-        &+span {
+
+        &+span{
           padding-left: 1rem;
         }
       }
@@ -35,5 +50,16 @@
   .loadPosts {
     padding-top: 3rem;
     color: var(--pink);
+
+    >span {
+      transition: filter .2s;
+      cursor: pointer;
+
+      &:hover {
+        filter: brightness(0.8);
+      }
+    }
+
+
   }
 }
