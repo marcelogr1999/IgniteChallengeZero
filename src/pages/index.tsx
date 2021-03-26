@@ -43,24 +43,24 @@ export default function Home({ postsPagination }: HomeProps) {
   }, []);
 
   const handleNextPage = () => {
-    // fetch(posts.next_page).then(res => res.json()).then(data => {
-    //   const results: Post[] = data.results.map(result => {
-    //     return {
-    //       uid: result.uid,
-    //       first_publication_date: format(new Date(result.first_publication_date), 'd MMM y', { locale: ptBR }),
-    //       data: {
-    //         title: result.data.title,
-    //         subtitle: result.data.subtitle,
-    //         author: result.data.author
-    //       }
-    //     }
-    //   })
+    fetch(posts.next_page).then(res => res.json()).then(data => {
+      const results: Post[] = data.results.map(result => {
+        return {
+          uid: result.uid,
+          first_publication_date: format(new Date(result.first_publication_date), 'd MMM y', { locale: ptBR }),
+          data: {
+            title: result.data.title,
+            subtitle: result.data.subtitle,
+            author: result.data.author
+          }
+        }
+      })
 
-    //   setPosts({
-    //     next_page: data.next_page,
-    //     results: [...posts.results, ...results]
-    //   });
-    // });
+      setPosts({
+        next_page: data.next_page,
+        results: [...posts.results, ...results]
+      });
+    });
   }
 
   return (
