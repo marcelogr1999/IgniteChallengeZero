@@ -1,5 +1,6 @@
 .banner {
-  height:400px;
+  height: 400px;
+  width: 100%;
 }
 
 .postContainer {
@@ -28,6 +29,13 @@
     }
   }
 
+  .editedInfo {
+    padding-top: 1rem;
+    font-style: italic;
+    font-size: 0.875rem;
+    color: var(--white-300);
+  }
+
   .postContent {
     padding-bottom: 2rem;
 
@@ -35,12 +43,16 @@
       color: var(--white-100);
       font-size: 2.25rem;
       padding: 2rem 0;
+      text-align: justify;
     }
 
     p {
       padding-top: 1rem;
       color: var(--white-200);
       font-size: 1.125rem;
+      line-height: 1.8rem;
+      text-align: justify;
+
       &+p {
         margin-top: 1rem;
       }
@@ -48,6 +60,33 @@
   }
 }
 
-.banner {
-  width: 100%;
+.postFooter {
+  display: flex;
+  justify-content: space-between;
+  padding: 2rem 0;
+
+  div {
+    display: flex;
+    flex-direction: column;
+
+    span {
+      color: var(--white-100);
+      font-size: 1.125rem;
+    }
+
+    a {
+      color: var(--pink);
+      font-weight: 600;
+      padding-top: .3rem;
+      transition: filter .2s;
+
+      &:hover {
+        filter: brightness(0.8);
+      }
+    }
+
+    &+div {
+      text-align: right;
+    }
+  }
 }

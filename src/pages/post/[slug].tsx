@@ -1,7 +1,6 @@
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 import { GetStaticPaths, GetStaticProps } from 'next';
-import React from 'react';
 import { FiCalendar, FiClock, FiUser } from 'react-icons/fi';
 import { RichText } from "prismic-dom";
 
@@ -12,11 +11,17 @@ import commonStyles from '../../styles/common.module.scss';
 import styles from './post.module.scss';
 import { useRouter } from 'next/router';
 import Header from '../../components/Header';
+import Utteranc from '../../components/Uterranc';
+import Link from 'next/link';
 
 interface Post {
   first_publication_date: string | null;
+  last_publication_date: string | null;
+  previous_post: PostNavigation;
+  next_post: PostNavigation;
   data: {
     title: string;
+    subtitle: string;
     banner: {
       url: string;
     };
@@ -30,6 +35,11 @@ interface Post {
   };
 }
 
+interface PostNavigation {
+  title: string | null;
+  slug: string | null;
+}
+
 interface PostProps {
   post: Post;
 }
@@ -37,15 +47,12 @@ interface PostProps {
 export default function Post({ post }: PostProps) {
   const router = useRouter()
 
-  if (router.isFallback) {
+  if (router.isFallback)
     return <div>Carregando...</div>
-  }
 
-  const wordsAmount = post.data.content.reduce((arr, actual) => {
+  const wordsAmount = Math.ceil(post.data.content.reduce((arr, actual) => {
     return arr + RichText.asText(actual.body).split(' ').length;
-  }, 0);
-
-  const wordsAmountFormatted = Math.ceil(wordsAmount / 200);
+  }, 0) / 200);
 
   return (
     <>
@@ -64,9 +71,14 @@ export default function Post({ post }: PostProps) {
           </span>
           <span>
             <FiClock />
-            {wordsAmountFormatted} min
+            {wordsAmount} min
           </span>
         </div>
+        {post.last_publication_date &&
+          <div className={styles.editedInfo}>
+            <span>{format(new Date(post.first_publication_date), "'* editado em 'd MMM y, 'às' hh:mm", { locale: ptBR })}</span>
+          </div>
+        }
         {post.data.content.map(content => (
           <div key={content.heading} className={styles.postContent}>
             <h2>{content.heading}</h2>
@@ -77,6 +89,29 @@ export default function Post({ post }: PostProps) {
             }
           </div>
         ))}
+        <div className={styles.postFooter}>
+          <div>
+            {post.previous_post &&
+              <>
+                <span>{post.previous_post.title}</span>
+                <Link href={`/post/${post.previous_post.slug}`}>
+                  <a>Post anterior</a>
+                </Link>
+              </>
+            }
+          </div>
+          <div>
+            {post.next_post &&
+              <>
+                <span>{post.next_post.title}</span>
+                <Link href={`/post/${post.next_post.slug}`}>
+                  <a>Próximo post</a>
+                </Link>
+              </>
+            }
+          </div>
+        </div>
+        <Utteranc />
       </div>
     </>
   )
@@ -110,10 +145,31 @@ export const getStaticProps: GetStaticProps = async context => {
 
   const prismic = getPrismicClient();
   const response = await prismic.getByUID('posts', String(slug), {});
+  const previous = await prismic.query([
+    Prismic.predicates.at('document.type', 'posts'),
+  ], {
+    fetch: ['posts.uid', 'posts.title'],
+    pageSize: 1,
+    orderings: '[document.last_publication_date]',
+    after: slug
+  });
+  const next = await prismic.query([
+    Prismic.predicates.at('document.type', 'posts'),
+  ], {
+    fetch: ['posts.uid', 'posts.title'],
+    pageSize: 1,
+    orderings: '[document.last_publication_date desc]',
+    after: slug
+  });
 
-  const post = {
+  const previous_post: PostNavigation = previous.results.length > 0 && previous.results[0].uid !== slug ? { title: previous.results[0].data?.title, slug: previous.results[0].uid } : null;
+  const next_post: PostNavigation = next.results.length > 0 && next.results[0].uid !== slug ? { title: next.results[0].data?.title, slug: next.results[0].uid } : null;
+
+  const post: Post = {
     first_publication_date: response.first_publication_date,
-    uid: response.uid,
+    last_publication_date: response.last_publication_date,
+    previous_post,
+    next_post,
     data: {
       title: response.data.title,
       subtitle: response.data.subtitle,
